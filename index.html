@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue or Cyan</title>
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            min-width: 640px;
+            min-height: 480px;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background-color: #282d36;
+        }
+
+        #block {
+            width: 256px;
+            height: 256px;
+            border: solid 4px black;
+            border-radius: 64px;
+        }
+
+        #results {
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #accuracy {
+            margin-right: 16px;
+            font-size: 32px;
+            color: #888
+        }
+
+        #extra-info {
+            color: #666;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: transparent;
+            color: #888;
+            padding: 16px;
+            font-size: 32px;
+            margin: 0 16px;
+            border: solid 4px black;
+            border-radius: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            color: white;
+            background-color: #444;
+        }
+    </style>
+    <script>
+        /** @type {HTMLElement} */
+        let block;
+        /** @type {HTMLElement} */
+        let accuracy;
+        /** @type {HTMLElement} */
+        let extraInfo;
+        /** @type {number} */
+        let green;
+        /** @type {number} */
+        let totalScore = 0;
+        let answersCount = 0;
+        let validAnswersCount = 0;
+
+        function generate() {
+            green = Math.floor(Math.random() * 256);
+            block.style.backgroundColor = `rgb(0,${green},255)`;
+        }
+
+        /** @param {boolean} cyan */
+        function onAnswer(cyan) {
+            const cyanIsValid = green > 127;
+            const scoreIncrease = cyan === cyanIsValid ? 1 : (127 - Math.abs(127 - green)) / 127;
+            if (cyan === cyanIsValid) validAnswersCount += 1;
+            totalScore += scoreIncrease;
+            answersCount += 1;
+            const percent = 100 * totalScore / answersCount;
+            accuracy.innerText = `${Math.round(percent < 75 ? percent / 3 * 2 : percent * 2 - 100)}%`;
+            extraInfo.innerText = `(${validAnswersCount}/${answersCount}: ${Math.round(100 * validAnswersCount / answersCount)}%)`;
+            generate();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            block = document.getElementById("block");
+            accuracy = document.getElementById("accuracy");
+            extraInfo = document.getElementById("extra-info");
+            document.getElementById("cyan-btn").onclick = () => onAnswer(true);
+            document.getElementById("blue-btn").onclick = () => onAnswer(false);
+            generate();
+        });
+    </script>
+</head>
+
+<body>
+    <div id="block"></div>
+    <div id="results">
+        <span id="accuracy">???</span>
+        <span id="extra-info"></span>
+    </div>
+    <div>
+        <button id="cyan-btn">CYAN</button>
+        <button id="blue-btn">BLUE</button>
+    </div>
+</body>
+
+</html>
